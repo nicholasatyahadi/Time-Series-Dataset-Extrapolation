@@ -81,8 +81,8 @@ param.sunspots <- data.frame(Month = c(1:12),
 param.sunspots <- param.sunspots %>% mutate(Lower=ParVal-qnorm(0.975,0,1)*ParSE,
                                             Upper=ParVal+qnorm(0.975,0,1)*ParSE)
 
-#simulate using the same method as with moe
-sim.sunspots <- as.vector(sapply(c(1:3),function(x){
+#simulate using the same method as with moe and add one year
+sim.sunspots <- as.vector(sapply(c(1:4),function(x){
   sapply(c(1:12),function(y){
     param.sunspots$Lower[y]+runif(1)*(param.sunspots$Upper[y]-param.sunspots$Lower[y])
   })
