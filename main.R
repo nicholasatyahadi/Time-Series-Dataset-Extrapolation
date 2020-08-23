@@ -6,6 +6,7 @@
 # library(lattice)
 # setwd("~/R/Projects/TS Simulation")
 
+#Self defined functions needed for calculations
 stat_rep <- function(data){
   fields <- c("Min","Max","Mean","SD","Q1","Q2","Q3")
   res <- c(min(data),
@@ -52,12 +53,7 @@ str(sunspots);str(income);str(climate)
 income <- income %>% mutate(min = mean-moe, max = mean+moe)
 
 #We will randomize the data per year, to simulate a fluctuating income
-#in this example, we will use uniform(0,1) and lognormal distribution for this example
-#for lognormal distribution, we will fit the data to at least get a better view of it
-inc_lnorm <- fitdist(income[,2],"lnorm",method = "mle");gofstat(inc_lnorm);summary(inc_lnorm)
-incparam <- as.vector(unlist(inc_lnorm[1]))
-income <- income %>% mutate(plmin = plnorm(min,meanlog=incparam[1],sdlog=incparam[2]),
-                  plmax = plnorm(max,meanlog=incparam[1],sdlog=incparam[2])) #pikirin lagi gini gimana
+#in this example, we will use uniform(0,1) for this example
 
 #say that we want to make monthly values
 u_income <- sapply(c(0:(nrow(income)*12-1)),function(x){
@@ -65,7 +61,7 @@ u_income <- sapply(c(0:(nrow(income)*12-1)),function(x){
 })
 
 #turn the dataset into time series dataset
-ts.income <- ts(u_income,start = 1, frequency = 1)
+ts.income <- ts(u_income,start = 2005, frequency = 1)
 ts.plot(ts.income)
 
 #data checking
