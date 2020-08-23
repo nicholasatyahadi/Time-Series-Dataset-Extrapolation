@@ -1,8 +1,6 @@
 # library(tidyverse)
 # library(tseries)
 # library(TSA)
-# library(extraDistr)
-# library(fitdistrplus)
 # library(actuar)
 # library(corrplot)
 # library(lattice)
@@ -17,6 +15,10 @@ stat_rep <- function(data){
            as.numeric(quantile(data,c(0.25,0.5,0.75))))
   resdf<-data.frame(Fields=fields, Val = res)
   return(resdf)
+}
+
+time_diff <- function(d1,d2){
+  return((d2-d1)/d1*100)
 }
 
 stand <- function(data){
@@ -63,12 +65,12 @@ u_income <- sapply(c(0:(nrow(income)*12-1)),function(x){
 })
 
 #turn the dataset into time series dataset
-ts.income <- ts(u_income,start = 1, frequency = 12)
+ts.income <- ts(u_income,start = 1, frequency = 1)
 ts.plot(ts.income)
 
 #data checking
 statrep1<-stat_rep(income[,2]);statrep2<-stat_rep(u_income)
-sumdiff <- data.frame(Fields = statrep1[,1], Percent_Diff=(statrep2[,2]-statrep1[,2])/statrep1[,2])
+sumdiff <- data.frame(Fields = statrep1[,1], Percent_Diff=(statrep2[,2]-statrep1[,2])/statrep1[,2]*100)
 statrep1;statrep2;sumdiff
 
 #-----------------------------------------------------------------------------------------------------
@@ -102,7 +104,7 @@ sim.sunspots <- as.vector(sapply(c(1:4),function(x){
 
 #data checking
 statrep1<-stat_rep(ex_sunspots[,2]);statrep2<-stat_rep(sim.sunspots)
-sumdiff <- data.frame(Fields = statrep1[,1], Percent_Diff=(statrep2[,2]-statrep1[,2])/statrep1[,2])
+sumdiff <- data.frame(Fields = statrep1[,1], Percent_Diff=(statrep2[,2]-statrep1[,2])/statrep1[,2]*100)
 statrep1;statrep2;sumdiff
 
 #-----------------------------------------------------------------------------------------------------
@@ -176,7 +178,7 @@ ts.climatesum <- list(ts(stand(clim_sum$avg_temp),start=2013,frequency=12),
 mos <- season(ts.climatesum[[1]])[1:48]
 reg_df <- data.frame(idx = c(1,1,1,1,2,2,2,3,3,3,4,4,4,5,5,5),
                      idy = c(2,3,4,5,3,4,5,2,4,5,2,3,5,2,3,4))
-names <- c("time",names(s.clim_sum))
+names <- c("time","temp","humid","wind","press")
 reg_df$xlab <- names[reg_df$idx]
 reg_df$ylab <- names[reg_df$idy]
 quadr2 <- linearr2 <- adjlinearr2 <- adjquadr2 <- NULL
@@ -199,19 +201,16 @@ reg_df$linearr2 <- linearr2;reg_df$quadr2 <- quadr2;
 reg_df$adjlinearr2 <- adjlinearr2;reg_df$adjquadr2<-adjquadr2;reg_df <- reg_df<-reg_df[,-c(1,2)]
 #we can see that high rsquared values in relation between temperature and pressure
 #which is pressure affects the temperature
-#the relation between wind speed with humidity should be noticed
-#the regression model might not be a great fit but it aligns with the high correlation coefficient
 #whereas the other regression models, doesn't seem to give out the best fit despite a high correlation coefficient
 #therefore, we are going to estimate the extrapolated values, using:
-#1. Pressure seasonal model
-#2. Wind Speed seasonal model
-#3. Pressure vs Temperature quadratic model
-#4. Wind Speed vs Humidity quadratic model
-x1<-ts.climatesum[[4]];x12<-x1^2;mod1 <- lm(x1~(mos-1))
-x2<-ts.climatesum[[3]];x22<-x2^2;mod2 <- lm(x2~(mos-1))
-mod3 <- lm(ts.climatesum[[1]]~x1+x12)
-mod4 <- lm(ts.climatesum[[2]]~x2+x22)
+#1. All seasonal model (the temperature model will be used only to get the monthly standard error)
+#2. Pressure vs Temperature quadratic model
 
+x1<-ts.climatesum[[4]];x12<-x1^2;mod1 <- lm(x1~(mos-1))
+x2<-ts.climatesum[[3]];mod2 <- lm(x2~(mos-1))
+mod3 <- lm(ts.climatesum[[1]]~x1+x12)
+x3<-ts.climatesum[[2]];mod4 <- lm(x3~(mos-1))
+mod5 <- lm(ts.climatesum[[1]]~(mos-1))
 #Estimation setup
 param.pressure <- data.frame(Month = c(1:12),
                              ParVal = as.vector(summary(mod1)$coefficients[,1]),
@@ -221,9 +220,10 @@ param.wind <- data.frame(Month = c(1:12),
                              ParSE = as.vector(summary(mod2)$coefficients[,2]))
 param.temp <- data.frame(ParVal = as.vector(summary(mod3)$coefficients[,1]),
                          ParSE = as.vector(summary(mod3)$coefficients[,2]))
-param.humid <- data.frame(ParVal = as.vector(summary(mod4)$coefficients[,1]),
-                         ParSE = as.vector(summary(mod4)$coefficients[,2]))
-
+param.humid <- data.frame(Month = c(1:12),
+                          ParVal = as.vector(summary(mod4)$coefficients[,1]),
+                          ParSE = as.vector(summary(mod4)$coefficients[,2]))
+sem.temp <- as.vector(summary(mod5)$coefficients[,2])
 #Extrapolation
 sim.pressure <- as.vector(sapply(c(1:4),function(x){
   sapply(c(1:12),function(y){
@@ -240,14 +240,25 @@ sim.wind <- as.vector(sapply(c(1:4),function(x){
 currparams <- param.temp$ParVal+runif(48,-1,1)*qnorm(0.975,0,1)*param.temp$ParSE
 sim.temp <- currparams[1]+currparams[2]*sim.pressure+currparams[3]*sim.pressure^2
 
-currparams <- param.humid$ParVal+runif(48,-1,1)*qnorm(0.975,0,1)*param.humid$ParSE
-sim.humid <- currparams[1]+currparams[2]*sim.wind+currparams[3]*sim.wind^2
+sim.humid <- as.vector(sapply(c(1:4),function(x){
+  sapply(c(1:12),function(y){
+    param.humid$ParVal[y]+runif(1,-1,1)*qnorm(0.975,0,1)*param.humid$ParSE[y]
+  })
+}))
 
-#Converting back to normal values from standardized values
+#Converting back to normal values from standardized values and check the difference by time
 sim.temp <- rstand(sim.temp,clim_sum$avg_temp)
 sim.humid <- rstand(sim.humid,clim_sum$avg_humid)
 sim.wind <- rstand(sim.wind,clim_sum$avg_wind)
 sim.pressure <- rstand(sim.pressure,clim_sum$avg_press)
+mean(time_diff(clim_sum$avg_temp,sim.temp))
+mean(time_diff(clim_sum$avg_humid,sim.humid))
+mean(time_diff(clim_sum$avg_wind,sim.wind))
+mean(time_diff(clim_sum$avg_press,sim.pressure))
+ts.plot(clim_sum$avg_temp, main = "Real vs Estimate Average Temperature",ylab = "Value");lines(sim.temp,col="blue")
+ts.plot(clim_sum$avg_humid, main = "Real vs Estimate Average Humidity",ylab = "Value");lines(sim.humid,col="blue")
+ts.plot(clim_sum$avg_wind, main = "Real vs Estimate Average Wind Speed",ylab = "Value");lines(sim.wind,col="blue")
+ts.plot(clim_sum$avg_press, main = "Real vs Estimate Average Pressure",ylab = "Value");lines(sim.pressure,col="blue")
 
 #Converting back to daily values from monthly agg
 days <- data.frame(year=clim_sum$year,
@@ -256,18 +267,33 @@ days <- data.frame(year=clim_sum$year,
                          ifelse(month %in% c(4,6,9,11),30,
                                 ifelse(month==2 & as.numeric(year)%%4==0,29,28))))
 
+#Note that to estimate the standard deviations we use homocedasticity assumption
+#Hence we can derive variance from daily estimates by using the variance from the monthly values.
 sim.daily.temp <- sim.daily.humid <- sim.daily.wind <- sim.daily.pressure <- NULL
 for(i in 1:4){
   for(j in 1:12){
     row <- i*j
-    sim.daily.temp <- c(sim.daily.temp,sim.temp[row]+runif(days$nodays[row],-1,1)*qnorm(0.975,0,1)*clim_sum$sd_temp[row])
-    sim.daily.humid <- c(sim.daily.humid,sim.humid[row]+runif(days$nodays[row],-1,1)*qnorm(0.975,0,1)*clim_sum$sd_humid[row])
-    sim.daily.wind <- c(sim.daily.wind,sim.wind[row]+runif(days$nodays[row],-1,1)*qnorm(0.975,0,1)*clim_sum$sd_wind[row])
-    sim.daily.pressure <- c(sim.daily.pressure,sim.pressure[row]+runif(days$nodays[row],-1,1)*qnorm(0.975,0,1)*clim_sum$sd_press[row])
+    se.temp <- sem.temp[y]*sqrt(days$nodays[row])*(max(clim_sum$avg_temp)-min(clim_sum$avg_temp))
+    se.humid <- param.humid$ParSE[y]*sqrt(days$nodays[row])*(max(clim_sum$avg_humid)-min(clim_sum$avg_humid))
+    se.wind <- param.wind$ParSE[y]*sqrt(days$nodays[row])*(max(clim_sum$avg_wind)-min(clim_sum$avg_wind))
+    se.press <- param.pressure$ParSE[y]*sqrt(days$nodays[row])*(max(clim_sum$avg_press)-min(clim_sum$avg_press))
+    sim.daily.temp <- c(sim.daily.temp,sim.temp[row]+runif(days$nodays[row],-1,1)*qnorm(0.975,0,1)*se.temp)
+    sim.daily.humid <- c(sim.daily.humid,sim.humid[row]+runif(days$nodays[row],-1,1)*qnorm(0.975,0,1)*se.humid)
+    sim.daily.wind <- c(sim.daily.wind,sim.wind[row]+runif(days$nodays[row],-1,1)*qnorm(0.975,0,1)*se.wind)
+    sim.daily.pressure <- c(sim.daily.pressure,sim.pressure[row]+runif(days$nodays[row],-1,1)*qnorm(0.975,0,1)*se.press)
   }
 }
 
-mean(sim.daily.temp)-mean(climate1$meantemp)
-mean(sim.daily.humid)-mean(climate1$humidity)
-mean(sim.daily.wind)-mean(climate1$wind_speed)
-mean(sim.daily.pressure)-mean(climate1$meanpressure)
+#Check the difference on the estimated daily values
+mean(time_diff(climate1$meantemp,sim.daily.temp))
+mean(time_diff(climate1$humidity,sim.daily.humid))
+mean(time_diff(climate1$wind_speed,sim.daily.wind))
+mean(time_diff(climate1$meanpressure,sim.daily.pressure))
+ts.plot(climate1$meantemp, main = "Real vs Estimate Temperature",ylab = "Value");lines(sim.daily.temp,col="blue")
+ts.plot(climate1$humidity, main = "Real vs Estimate Humidity",ylab = "Value");lines(sim.daily.humid,col="blue")
+ts.plot(climate1$wind_speed, main = "Real vs Estimate Wind Speed",ylab = "Value");lines(sim.daily.wind,col="blue")
+ts.plot(climate1$meanpressure, main = "Real vs Estimate Pressure",ylab = "Value");lines(sim.daily.pressure,col="blue")
+
+#When converted to daily, the values become too noisy.
+#The estimated humidity unable to highlight the sudden jump of value
+#What we learned: This method is appropiate when we are trying to extrapolate the sample used in estimation.
