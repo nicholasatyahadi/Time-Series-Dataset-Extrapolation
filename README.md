@@ -10,6 +10,7 @@ With this in mind I've created one of many methods you can extrapolate your data
 ## How to Extrapolate
 Here are a few things to keep in mind while creating an extrapolation method for the dataset:
 * Data characteristics: The trend or distribution of the dataset.
+* Data cleaning: Making sure the dataset contains the appropiate values
 * Correlation between values, especially in multivariate dataset.
 * Standard deviation or Margin of Error (MOE) of the dataset.
 
