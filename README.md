@@ -41,5 +41,14 @@ As we can see, the increasing trend of the income is still existent. Even so, th
 <img width="167" alt="sumdiffincomoe" src="https://user-images.githubusercontent.com/53423050/91012580-84cb4280-e610-11ea-8c18-ae7f20e3400f.png">
 
 Pretty close isn't it? :)
+
 ### Univariate Dataset without MOE
+For this example we're going to use the Monthly Sunspots Dataset which can be downloaded here:
+https://machinelearningmastery.com/time-series-datasets-for-machine-learning/
+
+Also, since the original dataset is already large, we're only going to use the last 36 monthly observations as our example. Here is the plot of the data:
+
+<img width="262" alt="tssunspotsreak" src="https://user-images.githubusercontent.com/53423050/91016428-f0b0a980-e616-11ea-82d8-30e1a31ea2c5.png">
+
+Say that we're required to generate another set of monthly observations based on the extracted dataset.
 ### Multivariate Dataset
