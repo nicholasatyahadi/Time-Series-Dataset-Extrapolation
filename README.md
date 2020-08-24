@@ -130,13 +130,13 @@ By eliminating the results from the seasonal trend, we can see from the table th
 
 Note that to extrapolate the temperature values, we are using the standard error geneerated from the seasonal model for temperature. With that in mind and the workflow has been done, here are plots comparing the real vs extrapolated values (the real values shown with the black graph):
 
-<img width="500" alt="avgtemp" src="https://user-images.githubusercontent.com/53423050/91036850-3e86db00-e632-11ea-8da3-4c55682f6cf7.png">
+<img width="500" alt="avgtemp" src="https://user-images.githubusercontent.com/53423050/91062278-b7982980-e656-11ea-9f2a-1f160d4aa6d2.png">
 
-<img width="500" alt="avghumid" src="https://user-images.githubusercontent.com/53423050/91036854-3fb80800-e632-11ea-933f-634f156bcb02.png">
+<img width="500" alt="avghumid" src="https://user-images.githubusercontent.com/53423050/91062303-bbc44700-e656-11ea-9139-594426275a9f.png">
 
-<img width="500" alt="avgspeed" src="https://user-images.githubusercontent.com/53423050/91037062-9ae9fa80-e632-11ea-8ae4-821cfd3cc7e4.png">
+<img width="500" alt="avgspeed" src="https://user-images.githubusercontent.com/53423050/91062273-b535cf80-e656-11ea-92e1-77ec61419544.png">
 
-<img width="500" alt="avgpress" src="https://user-images.githubusercontent.com/53423050/91036858-40509e80-e632-11ea-9215-1e36fb3b614a.png">
+<img width="500" alt="avgpress" src="https://user-images.githubusercontent.com/53423050/91062308-bc5cdd80-e656-11ea-8958-0728e3336521.png">
 
 To compare the values, I'm going to introduce you to another way to compare, which is using the average of percentage difference by time points. The percentage difference is still calculated the same way as the statistical properties. Here is the result
 
@@ -162,13 +162,13 @@ in which nj is the number of days in month j.
 
 Now with that been said, we can extrapolate the monthly values into the daily values. Let's see the comparison plots:
 
-<img width="500" alt="tempdailiy" src="https://user-images.githubusercontent.com/53423050/91055302-a77c4c00-e64e-11ea-95af-ecc6e4aaa795.png">
+<img width="500" alt="tempdailiy" src="https://user-images.githubusercontent.com/53423050/91062297-bb2bb080-e656-11ea-958d-d03555e75153.png">
 
-<img width="500" alt="dailyhumid" src="https://user-images.githubusercontent.com/53423050/91055305-a9460f80-e64e-11ea-9ce5-696d8ff33d01.png">
+<img width="500" alt="dailyhumid" src="https://user-images.githubusercontent.com/53423050/91062283-b7982980-e656-11ea-9764-17c346f49385.png">
 
-<img width="500" alt="dailywind" src="https://user-images.githubusercontent.com/53423050/91055311-ab0fd300-e64e-11ea-8324-4f331ebfb575.png">
+<img width="500" alt="dailywind" src="https://user-images.githubusercontent.com/53423050/91062293-b9fa8380-e656-11ea-9398-71a9bb5a0ca0.png">
 
-<img width="500" alt="dailypress" src="https://user-images.githubusercontent.com/53423050/91055307-a9dea600-e64e-11ea-9464-6cb7ab4c0f09.png">
+<img width="500" alt="dailypress" src="https://user-images.githubusercontent.com/53423050/91062285-b830c000-e656-11ea-9c19-d1e1373df249.png">
 
 I don't think we need to deep dive to calculate the average percentage difference for each field. It's apparent that the extrapolation method didn't replicate the actual daily values, here's why:
 
