@@ -54,6 +54,7 @@ str(income)
 str(climate)
 
 #------------------Univariate dataset with MOE - US Mean Income Dataset--------------------------
+set.seed(23)
 income <- income %>% mutate(min = mean - moe, max = mean + moe)
 
 #We will randomize the data per year, to simulate a fluctuating income
@@ -66,7 +67,7 @@ u_income <- sapply(c(0:(nrow(income) * 12 - 1)), function(x) {
 })
 
 #turn the dataset into time series dataset
-ts.income <- ts(u_income, start = 2005, frequency = 1)
+ts.income <- ts(u_income, start = 2005, frequency = 12)
 ts.plot(ts.income)
 
 #data checking
@@ -80,6 +81,7 @@ statrep2
 sumdiff
 
 #------------------Univariate dataset without MOE - Sunspots Dataset--------------------------
+set.seed(23)
 #extract sunspots dataset to a smaller number of data
 nrow(sunspots) #with 2820 rows, we will use the last 3 years of observations as simplification
 #we cannot use random sampling since this is a time series dataset
@@ -88,7 +90,7 @@ n <- 36
 ex_sunspots <- sunspots[c((nrow(sunspots) - n + 1):nrow(sunspots)), ]
 
 #convert to time series
-t.sunspots <- ts(ex_sunspots[, 2], start = 1, frequency = 12)
+t.sunspots <- ts(ex_sunspots[, 2], start = 1983, frequency = 12)
 mos <- season(t.sunspots)
 ts.plot(t.sunspots)
 
@@ -105,11 +107,29 @@ param.sunspots <- data.frame(
 )
 
 #simulate using the same method as with moe and add one year
-sim.sunspots <- as.vector(sapply(c(1:4), function(x) {
-  sapply(c(1:12), function(y) {
-    param.sunspots$ParVal[y] + runif(1, -1, 1) * qnorm(0.975, 0, 1) * param.sunspots$ParSE[y]
-  })
-}))
+days <- data.frame(year = clim_sum$year,
+                   month = clim_sum$month) %>%
+  mutate(nodays = ifelse(
+    month %in% c(1, 3, 5, 7, 8, 10, 12),
+    31,
+    ifelse(
+      month %in% c(4, 6, 9, 11),
+      30,
+      ifelse(month == 2 &
+               as.numeric(year) %% 4 == 0, 29, 28)
+    )
+  ))
+sim.sunspots <- NULL
+for (i in 1:3) {
+  for (j in 1:12) {
+    sim.sunspots <-
+      c(
+        sim.sunspots,
+        param.sunspots$ParVal[j] + runif(days$nodays[j], -1, 1) * qnorm(0.975, 0, 1) *
+          param.sunspots$ParSE[j]
+      )
+  }
+}
 
 #data checking
 statrep1 <- stat_rep(ex_sunspots[, 2])
@@ -122,7 +142,7 @@ statrep2
 sumdiff
 
 #------------------Multivariate dataset - New Delhi Climate Dataset--------------------------
-
+set.seed(23)
 #Relation check between values
 climate1 <-
   climate %>% mutate(year = format(as.Date(date), "%Y"),
@@ -343,14 +363,32 @@ mean(time_diff(clim_sum$avg_temp, sim.temp))
 mean(time_diff(clim_sum$avg_humid, sim.humid))
 mean(time_diff(clim_sum$avg_wind, sim.wind))
 mean(time_diff(clim_sum$avg_press, sim.pressure))
-ts.plot(clim_sum$avg_temp, main = "Real vs Estimate Average Temperature", ylab = "Value")
-lines(sim.temp, col = "blue")
-ts.plot(clim_sum$avg_humid, main = "Real vs Estimate Average Humidity", ylab = "Value")
-lines(sim.humid, col = "blue")
-ts.plot(clim_sum$avg_wind, main = "Real vs Estimate Average Wind Speed", ylab = "Value")
-lines(sim.wind, col = "blue")
-ts.plot(clim_sum$avg_press, main = "Real vs Estimate Average Pressure", ylab = "Value")
-lines(sim.pressure, col = "blue")
+mtdiff <-
+  data.frame(
+    Variables = c("Temperature", "Humidity", "Wind Speed", "Pressure"),
+    avg_time_diff = c(
+      mean(time_diff(clim_sum$avg_temp, sim.temp)),
+      mean(time_diff(clim_sum$avg_humid, sim.humid)),
+      mean(time_diff(clim_sum$avg_wind, sim.wind)),
+      mean(time_diff(clim_sum$avg_press, sim.pressure))
+    )
+  )
+ts.plot(ts(clim_sum$avg_temp, start = 2013, frequency = 12),
+        main = "Real vs Estimate Average Temperature",
+        ylab = "Value")
+lines(ts(sim.temp, start = 2013, frequency = 12), col = "blue")
+ts.plot(ts(clim_sum$avg_humid, start = 2013, frequency = 12),
+        main = "Real vs Estimate Average Humidity",
+        ylab = "Value")
+lines(ts(sim.humid, start = 2013, frequency = 12), col = "blue")
+ts.plot(ts(clim_sum$avg_wind, start = 2013, frequency = 12),
+        main = "Real vs Estimate Average Wind Speed",
+        ylab = "Value")
+lines(ts(sim.wind, start = 2013, frequency = 12), col = "blue")
+ts.plot(ts(clim_sum$avg_press, start = 2013, frequency = 12),
+        main = "Real vs Estimate Average Pressure",
+        ylab = "Value")
+lines(ts(sim.pressure, start = 2013, frequency = 12), col = "blue")
 
 #Converting back to daily values from monthly agg
 days <- data.frame(year = clim_sum$year,
@@ -409,14 +447,30 @@ mean(time_diff(climate1$meantemp, sim.daily.temp))
 mean(time_diff(climate1$humidity, sim.daily.humid))
 mean(time_diff(climate1$wind_speed, sim.daily.wind))
 mean(time_diff(climate1$meanpressure, sim.daily.pressure))
-ts.plot(climate1$meantemp, main = "Real vs Estimate Temperature", ylab = "Value")
-lines(sim.daily.temp, col = "blue")
-ts.plot(climate1$humidity, main = "Real vs Estimate Humidity", ylab = "Value")
-lines(sim.daily.humid, col = "blue")
-ts.plot(climate1$wind_speed, main = "Real vs Estimate Wind Speed", ylab = "Value")
-lines(sim.daily.wind, col = "blue")
-ts.plot(climate1$meanpressure, main = "Real vs Estimate Pressure", ylab = "Value")
-lines(sim.daily.pressure, col = "blue")
+ts.plot(ts(climate1$meantemp, start = 2013, frequency = 365),
+        main = "Real vs Estimate Temperature",
+        ylab = "Value")
+lines(ts(sim.daily.temp, start = 2013, frequency = 365), col = "blue")
+ts.plot(ts(climate1$humidity, start = 2013, frequency = 365),
+        main = "Real vs Estimate Humidity",
+        ylab = "Value")
+lines(ts(sim.daily.humid, start = 2013, frequency = 365), col = "blue")
+ts.plot(
+  ts(climate1$wind_speed, start = 2013, frequency = 365),
+  main = "Real vs Estimate Wind Speed",
+  ylab = "Value"
+)
+lines(ts(sim.daily.wind, start = 2013, frequency = 365), col = "blue")
+ts.plot(
+  ts(
+    climate1$meanpressure,
+    start = 2013,
+    frequency = 365
+  ),
+  main = "Real vs Estimate Pressure",
+  ylab = "Value"
+)
+lines(ts(sim.daily.pressure, start = 2013, frequency = 365), col = "blue")
 
 #When converted to daily, the values become too noisy.
 #The estimated humidity unable to highlight the sudden jump of value
