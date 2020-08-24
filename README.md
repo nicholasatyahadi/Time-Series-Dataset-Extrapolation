@@ -15,17 +15,17 @@ In this example, I will show you how to work with univariate (with and without M
 
 Here is the standardization equation:
 
-<img width="178" alt="stand" src="https://user-images.githubusercontent.com/53423050/91012503-69603780-e610-11ea-936b-4eb2982eb7ea.png">
+<img width="300"  alt="stand" src="https://user-images.githubusercontent.com/53423050/91012503-69603780-e610-11ea-936b-4eb2982eb7ea.png">
 
 To measure the accuracy of the extrapolation method, we're going to compare the statistical properties, which are minimum, maximum, average, then first, second, and third quantiles, of both real and extrapolated datasets. The values will be compared using the percentage difference between the values of statistical properties by this method:
 
-<img width="193" alt="statprop" src="https://user-images.githubusercontent.com/53423050/91028037-18a80900-e627-11ea-9634-cc41e793565a.png">
+<img width="275" alt="statprop" src="https://user-images.githubusercontent.com/53423050/91028037-18a80900-e627-11ea-9634-cc41e793565a.png">
 
 ### Univariate Dataset with MOE
 We know that the MOE is the error amount of the random sampling of a survey. So knowing the amount of the MOE gives an advantage in understanding the dataset better.
 First we're going to load the dataset, which is the US Annual Mean Income, gathered from United States Census Bureau Table S1901: https://data.census.gov/
 
-<img width="265" alt="income" src="https://user-images.githubusercontent.com/53423050/91012412-446bc480-e610-11ea-8719-bd46d5a5a09b.png">
+<img width="350" alt="income" src="https://user-images.githubusercontent.com/53423050/91012412-446bc480-e610-11ea-8719-bd46d5a5a09b.png">
 
 I've already added the Min and Max columns which are derived by adding and substracting the mean with the MOE, these will serve as our minimum and maximum values to be used in standardization equation.
 
@@ -33,15 +33,15 @@ Say it's best to have monthly values from the dataset. Hence, we're going to gen
 
 Original annual dataset:
 
-<img width="271" alt="tsincomereal" src="https://user-images.githubusercontent.com/53423050/91012536-74b36300-e610-11ea-97dd-d6592eb67076.png">
+<img width="350" alt="tsincomereal" src="https://user-images.githubusercontent.com/53423050/91012536-74b36300-e610-11ea-97dd-d6592eb67076.png">
 
 Here's the extrapolated one:
 
-<img width="262" alt="tsincomeex" src="https://user-images.githubusercontent.com/53423050/91012553-7c730780-e610-11ea-8026-0a71938f9477.png">
+<img width="350" alt="tsincomeex" src="https://user-images.githubusercontent.com/53423050/91012553-7c730780-e610-11ea-8026-0a71938f9477.png">
 
 As we can see, the increasing trend of the income is still existent. Even so, the extrapolated values are the noisier version of the original values, which could be used to model a complex time series model. To add, here's the percentage difference of statistical properties between the two to show you how accurate it is:
 
-<img width="167" alt="sumdiffincomoe" src="https://user-images.githubusercontent.com/53423050/91012580-84cb4280-e610-11ea-8c18-ae7f20e3400f.png">
+<img width="330" alt="sumdiffincomoe" src="https://user-images.githubusercontent.com/53423050/91012580-84cb4280-e610-11ea-8c18-ae7f20e3400f.png">
 
 Pretty close isn't it? :)
 
@@ -51,23 +51,23 @@ https://machinelearningmastery.com/time-series-datasets-for-machine-learning/
 
 Also, since the original dataset is already large, we're only going to use the last 36 monthly observations as our example. Here is the plot of the data:
 
-<img width="275" alt="tssunspotsreak" src="https://user-images.githubusercontent.com/53423050/91024350-07a8c900-e622-11ea-821f-c8303f5d4e3e.png">
+<img width="350" alt="tssunspotsreak" src="https://user-images.githubusercontent.com/53423050/91024350-07a8c900-e622-11ea-821f-c8303f5d4e3e.png">
 
 Say that we're required to generate daily observations based on the extracted dataset. Hence, we're going to need the MOE for the dataset, especially the MOE of the monthly values. One way to get the MOE is to fit the existing values to a model then retrive the parameters and the standard errors. Since we know that this is a monthly dataset, we can use linear seasonal regression as the model to be fitted. Moreover, by using regression we must assume that the dataset follows a homoscedasticity[1] assumption. Here's the result of the fit:
 
-<img width="324" alt="seasonressun" src="https://user-images.githubusercontent.com/53423050/91023948-66217780-e621-11ea-853f-83b2469b5a4c.png">
+<img width="400" alt="seasonressun" src="https://user-images.githubusercontent.com/53423050/91023948-66217780-e621-11ea-853f-83b2469b5a4c.png">
 
 Which is already a great fit. Now we're only going to use the monthly parameters (estimate) and standard errors to create the 95% confidence interval for each month. The confidence interval will be used to randomize values with the same method as explained in the last section.
 
 Here's the plot for the daily extrapolated value:
 
-<img width="940" alt="dailysunspots" src="https://user-images.githubusercontent.com/53423050/91026464-f8774a80-e624-11ea-8f3f-ed261f18507e.png">
+<img width="550" alt="dailysunspots" src="https://user-images.githubusercontent.com/53423050/91026464-f8774a80-e624-11ea-8f3f-ed261f18507e.png">
 
 Yes, it's super noisy. But let's look at the percentage difference of the statistical properties of each datasets
 
-<img width="166" alt="sumdiffsun" src="https://user-images.githubusercontent.com/53423050/91026652-412f0380-e625-11ea-9fdd-02772f92fd10.png">
+<img width="300" alt="sumdiffsun" src="https://user-images.githubusercontent.com/53423050/91026652-412f0380-e625-11ea-9fdd-02772f92fd10.png">
 
-This time, it's not as impressive as the income example. Why> First, we can definitely see that the extrapolated values doesn't carry the decreasing trend in the values and is stationary[2]. Morever, since the extrapolated values are daily observations and the values are stationary, the standard deviation of the observations decreases, causing the percentage difference of -20%. These findings told us immediately that linear seasonal regression may not be the perfect fit for the dataset.
+This time, it's not as impressive as the income example. Why? First, we can definitely see that the extrapolated values doesn't carry the decreasing trend in the values and is stationary[2]. Morever, since the extrapolated values are daily observations and the values are stationary, the standard deviation of the observations decreases, causing the percentage difference of -20%. These findings told us immediately that linear seasonal regression may not be the perfect fit for the dataset.
 
 ### Multivariate Dataset
 For our last example, we're going to use the New Delhi Climate training dataset, which can be acquired here:
@@ -84,14 +84,14 @@ The dataset contains four climate properties: Temperature, Humidity, Wind Speed,
 
 Besides the apparent relation between temperature and humidity, there's something off about the pressure values. Most of the values have similar values (as seen in the thick blue cluster) and around 1000, but there are definitely outliers as shown in the small dots which are away from the cluster. Moreover, if we summarize the values by month and observe the minimum and maximum pressures, there are definitely a few outliers.
 
-<img width="335" alt="weirdmin" src="https://user-images.githubusercontent.com/53423050/91031045-3b87ec80-e62a-11ea-8ff4-dc84049ca567.png">
-<img width="338" alt="weirdmax" src="https://user-images.githubusercontent.com/53423050/91031050-3cb91980-e62a-11ea-95e8-af67c39e6466.png">
+<img width="360" alt="weirdmin" src="https://user-images.githubusercontent.com/53423050/91031045-3b87ec80-e62a-11ea-8ff4-dc84049ca567.png">
+<img width="360" alt="weirdmax" src="https://user-images.githubusercontent.com/53423050/91031050-3cb91980-e62a-11ea-95e8-af67c39e6466.png">
 
 I am no climate expert, so why don't we ask our smart best friend, jack-of-all-trades, Google. Based on the facts that I've found in https://iridl.ldeo.columbia.edu/dochelp/QA/Basic/atmos_press.html the average air pressure is around 1013.25 millibars. Hence, with that in mind along with the values in the dataset, we can determine that air pressure between 990 and 1024 is normal, the rest is outliers. The outliers will be adjusted using the distribution of values according to the month.
 
 Here are the average and standard deviation summary of each month after cleaning:
 
-<img width="619" alt="climsumclean" src="https://user-images.githubusercontent.com/53423050/91031743-37a89a00-e62b-11ea-95db-12efafa6a0eb.png">
+<img width="700" alt="climsumclean" src="https://user-images.githubusercontent.com/53423050/91031743-37a89a00-e62b-11ea-95db-12efafa6a0eb.png">
 
 Never been better! Now here's the new scatterplots:
 
@@ -120,7 +120,7 @@ But let's take a closer look in the scatterplots. The temperature and pressure r
 
 Here are the model fitting results along with the result of fitting each field to linear seasonal regression model:
 
-<img width="379" alt="regdf" src="https://user-images.githubusercontent.com/53423050/91033913-59575080-e62e-11ea-84c1-2aa84271bd66.png">
+<img width="400" alt="regdf" src="https://user-images.githubusercontent.com/53423050/91033913-59575080-e62e-11ea-84c1-2aa84271bd66.png">
 
 Linearr2 and quadr2 are the r-squared values from the linear and quadratic regression fit respectively. While the adjlinearr2 and adjquadr2 are the adjusted r-squred values from the linear and quadratic regression fir respectively. The quadr2 and adjquadr2 for the seasonal regression is set to 0 since we didn't do any quadratic regression fit to it.
 
@@ -130,13 +130,13 @@ By eliminating the results from the seasonal trend, we can see from the table th
 
 Note that to extrapolate the temperature values, we are using the standard error geneerated from the seasonal model for temperature. With that in mind and the workflow has been done, here are plots comparing the real vs extrapolated values (the real values shown with the black graph):
 
-<img width="919" alt="avgtemp" src="https://user-images.githubusercontent.com/53423050/91036850-3e86db00-e632-11ea-8da3-4c55682f6cf7.png">
+<img width="500" alt="avgtemp" src="https://user-images.githubusercontent.com/53423050/91036850-3e86db00-e632-11ea-8da3-4c55682f6cf7.png">
 
-<img width="935" alt="avghumid" src="https://user-images.githubusercontent.com/53423050/91036854-3fb80800-e632-11ea-933f-634f156bcb02.png">
+<img width="500" alt="avghumid" src="https://user-images.githubusercontent.com/53423050/91036854-3fb80800-e632-11ea-933f-634f156bcb02.png">
 
-<img width="929" alt="avgspeed" src="https://user-images.githubusercontent.com/53423050/91037062-9ae9fa80-e632-11ea-8ae4-821cfd3cc7e4.png">
+<img width="500" alt="avgspeed" src="https://user-images.githubusercontent.com/53423050/91037062-9ae9fa80-e632-11ea-8ae4-821cfd3cc7e4.png">
 
-<img width="932" alt="avgpress" src="https://user-images.githubusercontent.com/53423050/91036858-40509e80-e632-11ea-9215-1e36fb3b614a.png">
+<img width="500" alt="avgpress" src="https://user-images.githubusercontent.com/53423050/91036858-40509e80-e632-11ea-9215-1e36fb3b614a.png">
 
 To compare the values, I'm going to introduce you to another way to compare, which is using the average of percentage difference by time points. The percentage difference is still calculated the same way as the statistical properties. Here is the result
 
@@ -152,23 +152,23 @@ Let Xi be the daily values and Yj be the monthly average. We also know that marg
 
 in which Z is the Normal distribution deviate according to alpha and sigma/sqrt(n) is the standard error. Since we know the standard error, we can find the standard deviation by multiplying the standard error by sqrt(n), in which n is the number of monthly observations. Do note that the variance is for the standardized values so we need to convert the variance by these following set of equations:
 
-<img width="209" alt="varyj" src="https://user-images.githubusercontent.com/53423050/91053630-4bfd8e80-e64d-11ea-94d4-799ada2cccee.png">
+<img width="350" alt="varyj" src="https://user-images.githubusercontent.com/53423050/91053630-4bfd8e80-e64d-11ea-94d4-799ada2cccee.png">
 
 Then we will have the estimation of the standard error from the daily values, using these set of equations:
 
-<img width="227" alt="varxi" src="https://user-images.githubusercontent.com/53423050/91053633-4d2ebb80-e64d-11ea-89cc-2bdd59ff7b80.png">
+<img width="350" alt="varxi" src="https://user-images.githubusercontent.com/53423050/91053633-4d2ebb80-e64d-11ea-89cc-2bdd59ff7b80.png">
 
 in which nj is the number of days in month j.
 
 Now with that been said, we can extrapolate the monthly values into the daily values. Let's see the comparison plots:
 
-<img width="938" alt="tempdailiy" src="https://user-images.githubusercontent.com/53423050/91055302-a77c4c00-e64e-11ea-95af-ecc6e4aaa795.png">
+<img width="500" alt="tempdailiy" src="https://user-images.githubusercontent.com/53423050/91055302-a77c4c00-e64e-11ea-95af-ecc6e4aaa795.png">
 
-<img width="941" alt="dailyhumid" src="https://user-images.githubusercontent.com/53423050/91055305-a9460f80-e64e-11ea-9ce5-696d8ff33d01.png">
+<img width="500" alt="dailyhumid" src="https://user-images.githubusercontent.com/53423050/91055305-a9460f80-e64e-11ea-9ce5-696d8ff33d01.png">
 
-<img width="937" alt="dailywind" src="https://user-images.githubusercontent.com/53423050/91055311-ab0fd300-e64e-11ea-8324-4f331ebfb575.png">
+<img width="500" alt="dailywind" src="https://user-images.githubusercontent.com/53423050/91055311-ab0fd300-e64e-11ea-8324-4f331ebfb575.png">
 
-<img width="935" alt="dailypress" src="https://user-images.githubusercontent.com/53423050/91055307-a9dea600-e64e-11ea-9464-6cb7ab4c0f09.png">
+<img width="500" alt="dailypress" src="https://user-images.githubusercontent.com/53423050/91055307-a9dea600-e64e-11ea-9464-6cb7ab4c0f09.png">
 
 I don't think we need to deep dive to calculate the average percentage difference for each field. It's apparent that the extrapolation method didn't replicate the actual daily values, here's why:
 
@@ -181,6 +181,6 @@ So, the answer is definitely a no.
 The extrapolated values from a dataset can only replicate the characteristics of the dataset used in the extrapolation process. Moreover, by assuming a homocedasticity condition in the calculations may be the cause of the inability to detect "jump"(s). Therefore, an appropiate time-series model to fit the values are important to acknowledge to get better results. But let's not forget, the extrapolated values won't be and never be a perfect representation of the population. Nevertheless, it's still useful to estimate and understand what the population might be like.
 
 ##### Some terms
-[1] Homocedasticity: A situation where the random disturbance between independent (in this case the months) and dependent variables (sunspots reading) is the same across all values of the independent variables.
+[1] Homocedasticity: A situation where the random disturbance between independent and dependent variables is the same across all values of the independent variables.
 
 [2] Stationary Process: A stochastic process whose unconditional joint probability distributions between lags are the same.
