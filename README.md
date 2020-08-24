@@ -15,8 +15,11 @@ Here are a few things to keep in mind while creating an extrapolation method for
 * Standard deviation or Margin of Error (MOE) of the dataset.
 
 In this example, I will show you how to work with univariate (with and without MOE) and multivariate time series dataset. 
-The dataset that I use in this example will be linked below.
+The dataset that I use in this example will be linked below. Also, for this example I'm going to use Uniform(0,1) distribution as the distribution for the standardized values.
+(Yes you can use other distributions if you want to)
 
 ### Univariate Dataset with MOE
+We know that the MOE is the error amount of the random sampling of a survey. So knowing the amount of the MOE gives an advantage in understanding the dataset better.
+First we're going to load the dataset, which is the US Annual Mean Income, gathered from United Census Bureau.
 ### Univariate Dataset without MOE
 ### Multivariate Dataset
