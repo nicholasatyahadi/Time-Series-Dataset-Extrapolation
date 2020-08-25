@@ -53,7 +53,7 @@ Also, since the original dataset is already large, we're only going to use the l
 
 <img width="350" alt="tssunspotsreak" src="https://user-images.githubusercontent.com/53423050/91024350-07a8c900-e622-11ea-821f-c8303f5d4e3e.png">
 
-Say that we're required to generate daily observations based on the extracted dataset. Hence, we're going to need the MOE for the dataset, especially the MOE of the monthly values. One way to get the MOE is to fit the existing values to a model then retrive the parameters and the standard errors. Since we know that this is a monthly dataset, we can use linear seasonal regression as the model to be fitted. Moreover, by using regression we must assume that the dataset follows a homoscedasticity[1] assumption. Here's the result of the fit:
+Say that we're required to generate daily observations based on the extracted dataset. Hence, we're going to need the MOE for the dataset, especially the MOE of the monthly values. One way to get the MOE is to fit the existing values to a model then retrive the parameters and the standard errors. Since we know that this is a monthly dataset, we can use linear seasonal regression as the model to be fitted. Moreover, by using regression we must assume that the dataset follows a stationary process assumption[1]. Here's the result of the fit:
 
 <img width="400" alt="seasonressun" src="https://user-images.githubusercontent.com/53423050/91023948-66217780-e621-11ea-853f-83b2469b5a4c.png">
 
@@ -67,7 +67,7 @@ Yes, it's super noisy. But let's look at the percentage difference of the statis
 
 <img width="300" alt="sumdiffsun" src="https://user-images.githubusercontent.com/53423050/91026652-412f0380-e625-11ea-9fdd-02772f92fd10.png">
 
-This time, it's not as impressive as the income example. Why? First, we can definitely see that the extrapolated values doesn't carry the decreasing trend in the values and is stationary[2]. Morever, since the extrapolated values are daily observations and the values are stationary, the standard deviation of the observations decreases, causing the percentage difference of -20%. These findings told us immediately that linear seasonal regression may not be the perfect fit for the dataset.
+This time, it's not as impressive as the income example. Why? First, we can definitely see that the extrapolated values doesn't carry the decreasing trend in the values and is stationary. Morever, since the extrapolated values are daily observations and the values are stationary, the standard deviation of the observations decreases, causing the percentage difference of -20%. These findings told us immediately that linear seasonal regression may not be the perfect fit for the dataset.
 
 ### Multivariate Dataset
 For our last example, we're going to use the New Delhi Climate training dataset, which can be acquired here:
@@ -181,6 +181,4 @@ So, the answer is definitely a no.
 The extrapolated values from a dataset can only replicate the characteristics of the dataset used in the extrapolation process. Moreover, by assuming a homocedasticity condition in the calculations may be the cause of the inability to detect "jump"(s). Therefore, an appropiate time-series model to fit the values are important to acknowledge to get better results. But let's not forget, the extrapolated values won't be and never be a perfect representation of the population. Nevertheless, it's still useful to estimate and understand what the population might be like.
 
 ##### Some terms
-[1] Homocedasticity: A situation where the random disturbance between independent and dependent variables is the same across all values of the independent variables.
-
-[2] Stationary Process: A stochastic process whose unconditional joint probability distributions between lags are the same.
+[1] Stationary Process: A stochastic process whose unconditional joint probability distributions between lags are the same.
