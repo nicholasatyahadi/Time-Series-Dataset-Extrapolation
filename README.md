@@ -126,7 +126,7 @@ Linearr2 and quadr2 are the r-squared values from the linear and quadratic regre
 
 By eliminating the results from the seasonal trend, we can see from the table the highest r-squared values with pressure as the dependent variable and temperature as the independent variable. Hence, when we simulate the temperature we need to simulate the pressure values first then use the quadratic model to acquire the temperature values. Meanwhile, the other regression results don't seem quite significant despite the high correlations we found earlier. Therefore, we will assume that the only relation that exists are pressure affects the temperature and the rest are independent to each other. To sum it all up, here's what are we going to do:
 
-<img width="557" alt="flow" src="https://user-images.githubusercontent.com/53423050/91036440-8a855000-e631-11ea-96d2-18eb855245ba.png">
+<img width="572" alt="flow" src="https://user-images.githubusercontent.com/53423050/91185903-926bef80-e718-11ea-8041-708d6add9fb6.png">
 
 Note that to extrapolate the temperature values, we are using the standard error geneerated from the seasonal model for temperature. With that in mind and the workflow has been done, here are plots comparing the real vs extrapolated values (the real values shown with the black graph):
 
