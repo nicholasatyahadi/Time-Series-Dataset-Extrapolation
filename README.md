@@ -1,6 +1,6 @@
 # Time-Series-Dataset-Extrapolation
 ## Overview
-Sometimes we receive data samples with small amount of data. This small amount might be affected by the periodcity of the observation. For example, daily observation will result in a larger set of data than annual observation.
+Sometimes we receive data samples with small amount of data. This a small amount might be affected by the periodicity of the observation. For example, daily observation will result in a larger set of data than annual observation.
 
 Say that you need to create a model based on annual observations but the amount of observations is just too small to create an appropiate model. One way to do it is to extrapolate the dataset by keeping the original properties of the dataset as best as we can. With this in mind I've created one of many methods you can extrapolate your data in such manner.
 
